@@ -33,7 +33,6 @@ def process_applicants_data(applicants_path: str) -> pd.DataFrame:
     selected_columns = [
         'ID',
         'infos_basicas_sabendo_de_nos_por',
-        'infos_basicas_codigo_profissional',
         'informacoes_pessoais_estado_civil',
         'informacoes_profissionais_certificacoes',
         'informacoes_profissionais_remuneracao',
