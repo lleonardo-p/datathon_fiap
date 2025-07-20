@@ -1,6 +1,9 @@
 import pandas as pd
 from typing import Any, Dict
 from pathlib import Path
+from sqlalchemy import create_engine
+from dotenv import load_dotenv
+import os
 
 
 
@@ -78,3 +81,68 @@ def detect_nulls_and_nans(df: pd.DataFrame) -> pd.DataFrame:
         })
 
     return pd.DataFrame(results).sort_values(by='total_suspect_values', ascending=False).reset_index(drop=True)
+
+
+def drop_constant_binary_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Identifica e remove colunas que contenham apenas 0s ou apenas 1s.
+
+    Args:
+        df (pd.DataFrame): DataFrame de entrada.
+
+    Returns:
+        pd.DataFrame: DataFrame sem colunas binárias constantes.
+    """
+    constant_cols: List[str] = [
+        col for col in df.columns
+        if df[col].nunique(dropna=False) == 1 and df[col].isin([0, 1]).all()
+    ]
+
+    if constant_cols:
+        print(f"📌 {len(constant_cols)} colunas com apenas 0 ou 1 serão removidas:")
+        for col in constant_cols:
+            print(f" - {col}")
+    else:
+        print("✅ Nenhuma coluna binária constante encontrada.")
+
+    return df.drop(columns=constant_cols)
+
+
+import pandas as pd
+
+
+# Carrega variáveis de ambiente, se existir um .env
+load_dotenv()
+
+def ingest_dataframe_to_postgres(df: pd.DataFrame, table_name: str, if_exists: str = "replace"):
+    """
+    Insere um DataFrame em uma tabela PostgreSQL.
+
+    Parâmetros:
+        df (pd.DataFrame): o DataFrame a ser ingerido
+        table_name (str): nome da tabela de destino no PostgreSQL
+        if_exists (str): comportamento se a tabela já existir:
+                         - 'fail': lança erro
+                         - 'replace': substitui a tabela
+                         - 'append': insere os dados sem apagar a tabela
+    """
+    try:
+        # Coleta configs do .env (ou usa valores default)
+        DB_USER = os.getenv("POSTGRES_USER", "app_user")
+        DB_PASSWORD = os.getenv("POSTGRES_PASSWORD", "app_password")
+        DB_HOST = os.getenv("POSTGRES_HOST", "localhost")
+        DB_PORT = os.getenv("POSTGRES_PORT", "5432")
+        DB_NAME = os.getenv("POSTGRES_DB", "app_db")
+
+        # Cria a string de conexão
+        DATABASE_URL = f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+        engine = create_engine(DATABASE_URL)
+
+        # Envia o DataFrame
+        df.to_sql(name=table_name, con=engine, if_exists=if_exists, index=False, method="multi")
+
+        print(f"Tabela '{table_name}' atualizada com sucesso ({len(df)} registros).")
+
+    except Exception as e:
+        print("Erro ao inserir dados no PostgreSQL:")
+        print(e)

@@ -1,7 +1,7 @@
 import pandas as pd
 from typing import Dict
-from utils import transpose_and_prepare_dataframe, expand_dict_column, detect_nulls_and_nans
-from feature import (
+from artifacts_datathon.utils import transpose_and_prepare_dataframe, expand_dict_column, detect_nulls_and_nans, ingest_dataframe_to_postgres
+from artifacts_datathon.feature import (
     generate_flags_and_category_column,
     process_certification_column,
     process_salary_column,
@@ -9,7 +9,7 @@ from feature import (
 )
 
 
-def process_applicants_data(applicants_path: str) -> pd.DataFrame:
+def process_applicants_data(applicants_path: str, predict=False) -> pd.DataFrame:
     """
     Processes the applicants JSON file and returns a transformed DataFrame with engineered features.
 
@@ -38,7 +38,6 @@ def process_applicants_data(applicants_path: str) -> pd.DataFrame:
         'informacoes_profissionais_remuneracao',
         'informacoes_profissionais_nivel_profissional',
         'formacao_e_idiomas_nivel_academico',
-        'cargo_atual_data_ultima_promocao',
     ]
     df = df[selected_columns]
 
@@ -123,7 +122,10 @@ def process_applicants_data(applicants_path: str) -> pd.DataFrame:
     df = process_salary_column(df, 'informacoes_profissionais_remuneracao')
 
     # Feature: Promoção
-    df = process_promotion_date_column(df, 'cargo_atual_data_ultima_promocao')
+   # df = process_promotion_date_column(df, 'cargo_atual_data_ultima_promocao')
+
+    if not predict:
+        ingest_dataframe_to_postgres(df, table_name="applicants", if_exists="replace")
 
     return df
 

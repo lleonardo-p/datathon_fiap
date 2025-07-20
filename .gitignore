@@ -60,6 +60,8 @@ data/processed/
 *.json
 *.xlsx
 *.zip
+mlruns/*
+models/*
 
 # Notebooks (optional: ignore outputs)
 *.ipynb

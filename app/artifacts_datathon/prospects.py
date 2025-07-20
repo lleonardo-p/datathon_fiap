@@ -1,6 +1,6 @@
 import pandas as pd
 from typing import List, Optional
-from utils import transpose_and_prepare_dataframe, expand_dict_column, detect_nulls_and_nans, remove_invalid_prospect_codigo
+from utils import transpose_and_prepare_dataframe, expand_dict_column, detect_nulls_and_nans, remove_invalid_prospect_codigo, ingest_dataframe_to_postgres
 
 
 def process_prospects_data(prospects_path: str) -> pd.DataFrame:
@@ -77,11 +77,12 @@ def process_prospects_data(prospects_path: str) -> pd.DataFrame:
             return 1
         elif status in reprovados:
             return 0
-        else:
-            return 0
         return None
 
     df['target'] = df['prospect_situacao_candidado'].apply(classify_target)
+    df = df.dropna(subset=['target'])
+
+    ingest_dataframe_to_postgres(df, table_name="propects", if_exists="replace")
 
     return df
 

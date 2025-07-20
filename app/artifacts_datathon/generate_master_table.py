@@ -1,6 +1,7 @@
 import pandas as pd
 from prospects import process_prospects_data
 from applicants import process_applicants_data
+from utils import drop_constant_binary_columns, ingest_dataframe_to_postgres
 
 
 def generate_master_table(
@@ -40,9 +41,12 @@ def generate_master_table(
     )
 
     df_master = df_master.drop(columns=['prospect_situacao_candidado'], errors='ignore')
+    df_master = drop_constant_binary_columns(df_master)
 
     # Salvar em Parquet
     df_master.to_parquet(output_path, index=False)
+
+    ingest_dataframe_to_postgres(df_master, table_name="master_table", if_exists="replace")
 
 
     return df_master
