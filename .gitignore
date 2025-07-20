@@ -1,0 +1,73 @@
+# Byte-compiled / cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Jupyter Notebook Checkpoints
+.ipynb_checkpoints/
+
+# VS Code settings
+.vscode/
+
+# Environments
+.env
+.venv/
+venv/
+ENV/
+env/
+
+# Virtual environment packages
+*.egg-info/
+.eggs/
+dist/
+build/
+*.egg
+
+# Python-specific
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+
+# PyInstaller
+*.spec
+
+# Test / Coverage
+coverage.xml
+*.cover
+*.py,cover
+.cache
+nosetests.xml
+pytest_cache/
+.tox/
+htmlcov/
+
+# MyPy / Pylint / Ruff / Pyright
+.mypy_cache/
+.dmypy.json
+.pyre/
+.pytype/
+ruff_cache/
+.pylint.d/
+
+# Data / Output
+data/raw/
+data/processed/
+*.csv
+*.parquet
+*.tsv
+*.json
+*.xlsx
+*.zip
+
+# Notebooks (optional: ignore outputs)
+*.ipynb
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Jupyter runtime
+*.nbconvert.ipynb
+.jupyter/
