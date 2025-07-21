@@ -46,9 +46,6 @@ def expand_dict_column(df: pd.DataFrame, column: str, prefix: str) -> pd.DataFra
             print(f"Error expanding column '{column}': {e}")
     return df
 
-
-import pandas as pd
-
 def remove_invalid_prospect_codigo(df: pd.DataFrame) -> pd.DataFrame:
     return df[
         (~df['prospect_codigo'].astype(str).str.strip().isin(['', 'nan', 'na', 'none']))

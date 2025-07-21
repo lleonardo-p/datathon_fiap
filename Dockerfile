@@ -30,4 +30,4 @@ ENV PYTHONPATH="/app"
 EXPOSE 5007
 
 # Comando de execução padrão
-CMD ["python", "api/app.py"]
+CMD ["sh", "-c", "python api/app.py"]
