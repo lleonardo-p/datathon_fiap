@@ -5,7 +5,7 @@ import pandas as pd
 import os
 import uuid
 import json
-from artifacts_datathon.applicants import process_applicants_data
+from datathon_package.applicants import process_applicants_data
 
 app = Flask(__name__)
 
@@ -13,7 +13,7 @@ app = Flask(__name__)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Caminho do modelo
-MODEL_PATH = os.path.join(BASE_DIR, "models", "lgbm_oversample_model.pkl")
+MODEL_PATH = os.path.join("models", "lgbm_oversample_model.pkl")
 
 # Carrega o modelo
 print(f"[INFO] Carregando modelo de: {MODEL_PATH}")

@@ -1,19 +1,33 @@
-FROM python:3.13-rc-slim
+# Usa imagem oficial Python 3.10.13 slim
+FROM python:3.10.13-slim
 
+# Define diretório de trabalho
 WORKDIR /app
 
-# Instala o vim e a libgomp (necessária para o LightGBM)
-RUN apt-get update && apt-get install -y vim libgomp1 && apt-get clean
+# Instala dependências do sistema (libgomp é necessária pro LightGBM)
+RUN apt-get update && apt-get install -y \
+    vim \
+    libgomp1 \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copia código e dados
-COPY ./app ./app
+# Copia os diretórios e arquivos necessários
+COPY ./api ./api
+COPY ./pipelines ./pipelines
+COPY ./models ./models
 COPY ./data ./data
+COPY ./datathon_package ./datathon_package
 COPY requirements.txt .
+COPY .env .env
 
-# Instala dependências Python
+# Instala dependências do Python
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
+# Define o PYTHONPATH para permitir imports do pacote local
+ENV PYTHONPATH="/app"
+
+# Expõe a porta que será usada pela aplicação
 EXPOSE 5007
 
-# Ajusta os caminhos conforme estrutura de diretórios
-CMD ["sh", "-c",  "python app.py"]
+# Comando de execução padrão
+CMD ["python", "api/app.py"]

@@ -4,9 +4,6 @@ import mlflow
 import mlflow.sklearn
 from lightgbm import LGBMClassifier
 from sklearn.model_selection import StratifiedKFold, cross_val_score
-from sklearn.metrics import (
-    accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
-)
 from imblearn.over_sampling import SMOTE
 from typing import Tuple
 
@@ -43,7 +40,7 @@ def train_lgbm_with_oversampling(
     smote = SMOTE(random_state=42)
     X_resampled, y_resampled = smote.fit_resample(X, y)
 
-    print(f"✅ Oversampling aplicado: {y.value_counts().to_dict()} ➡ {pd.Series(y_resampled).value_counts().to_dict()}")
+    print(f" Oversampling aplicado: {y.value_counts().to_dict()} ➡ {pd.Series(y_resampled).value_counts().to_dict()}")
 
     mlflow.set_experiment(experiment_name)
     with mlflow.start_run():
@@ -66,7 +63,7 @@ def train_lgbm_with_oversampling(
         with open(model_output_path, "wb") as f:
             pickle.dump(model, f)
 
-        print("✅ Modelo treinado com SMOTE e salvo com sucesso!")
+        print("Modelo treinado com SMOTE e salvo com sucesso!")
         for k, v in metrics.items():
             print(f"{k}: {v:.4f}")
 

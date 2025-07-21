@@ -111,7 +111,7 @@ def drop_constant_binary_columns(df: pd.DataFrame) -> pd.DataFrame:
 import pandas as pd
 
 
-def ingest_dataframe_to_postgres(df: pd.DataFrame, table_name: str, if_exists: str = "replace"):
+def ingest_dataframe_to_postgres(df: pd.DataFrame, local, table_name: str, if_exists: str = "replace"):
     """
     Insere um DataFrame em uma tabela PostgreSQL.
 
@@ -129,9 +129,12 @@ def ingest_dataframe_to_postgres(df: pd.DataFrame, table_name: str, if_exists: s
         # Coleta configs do .env (ou usa valores default)
         DB_USER = os.getenv("POSTGRES_USER", "leonardo")
         DB_PASSWORD = os.getenv("POSTGRES_PASSWORD", "123456")
-        DB_HOST = os.getenv("POSTGRES_HOST", "postgres")
+        DB_HOST = os.getenv("POSTGRES_HOST", "localhost")
         DB_PORT = os.getenv("POSTGRES_PORT", "5432")
         DB_NAME = os.getenv("POSTGRES_DB", "meubanco")
+
+        if local:
+            DB_HOST = "localhost"
 
         # Cria a string de conexão
         DATABASE_URL = f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"

@@ -1,6 +1,6 @@
 import pandas as pd
 from typing import List, Optional
-from artifacts_datathon.utils import transpose_and_prepare_dataframe, expand_dict_column, detect_nulls_and_nans, remove_invalid_prospect_codigo, ingest_dataframe_to_postgres
+from datathon_package.utils import transpose_and_prepare_dataframe, expand_dict_column, detect_nulls_and_nans, remove_invalid_prospect_codigo, ingest_dataframe_to_postgres
 
 
 def process_prospects_data(prospects_path: str) -> pd.DataFrame:
@@ -82,14 +82,14 @@ def process_prospects_data(prospects_path: str) -> pd.DataFrame:
     df['target'] = df['prospect_situacao_candidado'].apply(classify_target)
     df = df.dropna(subset=['target'])
 
-    ingest_dataframe_to_postgres(df, table_name="propects", if_exists="replace")
+    ingest_dataframe_to_postgres(df, local=True, table_name="propects", if_exists="replace")
 
     return df
 
 
 if __name__ == "__main__":
     # Caminho para o arquivo JSON
-    prospects_path = './data/prospects/prospects.json'
+    prospects_path = './data/raw/prospects/prospects.json'
 
     # Processa os dados
     df = process_prospects_data(prospects_path)

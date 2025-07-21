@@ -1,13 +1,14 @@
 import pandas as pd
-from artifacts_datathon.prospects import process_prospects_data
-from artifacts_datathon.applicants import process_applicants_data
-from artifacts_datathon.utils import drop_constant_binary_columns, ingest_dataframe_to_postgres
+from datathon_package.prospects import process_prospects_data
+from datathon_package.applicants import process_applicants_data
+from datathon_package.utils import drop_constant_binary_columns, ingest_dataframe_to_postgres
 
 
 def generate_master_table(
     applicants_path: str,
     prospects_path: str,
-    output_path: str = './data/processed/master_table.parquet'
+    output_path: str = './data/processed/master_table.parquet',
+    local=False
 ) -> pd.DataFrame:
     """
     Generates and saves a master table by merging processed applicants and prospects data.
@@ -46,15 +47,15 @@ def generate_master_table(
     # Salvar em Parquet
     df_master.to_parquet(output_path, index=False)
 
-    ingest_dataframe_to_postgres(df_master, table_name="master_table", if_exists="replace")
+    ingest_dataframe_to_postgres(df_master, local, table_name="master_table", if_exists="replace")
 
 
     return df_master
 
 
 if __name__ == "__main__":
-    applicants_path = './data/applicants/applicants.json'
-    prospects_path = './data/prospects/prospects.json'
+    applicants_path = './data/raw/applicants/applicants.json'
+    prospects_path = './data/raw/prospects/prospects.json'
 
     df_master = generate_master_table(applicants_path, prospects_path)
     print("Master table saved. Shape:", df_master.shape)

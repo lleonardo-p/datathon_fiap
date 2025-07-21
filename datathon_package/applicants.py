@@ -1,13 +1,13 @@
 import pandas as pd
+import os
 from typing import Dict
-from artifacts_datathon.utils import transpose_and_prepare_dataframe, expand_dict_column, detect_nulls_and_nans, ingest_dataframe_to_postgres
-from artifacts_datathon.feature import (
+from datathon_package.utils import transpose_and_prepare_dataframe, expand_dict_column, detect_nulls_and_nans, ingest_dataframe_to_postgres
+from datathon_package.feature import (
     generate_flags_and_category_column,
     process_certification_column,
     process_salary_column,
     process_promotion_date_column
 )
-
 
 def process_applicants_data(applicants_path: str, predict=False) -> pd.DataFrame:
     """
@@ -125,13 +125,13 @@ def process_applicants_data(applicants_path: str, predict=False) -> pd.DataFrame
    # df = process_promotion_date_column(df, 'cargo_atual_data_ultima_promocao')
 
     if not predict:
-        ingest_dataframe_to_postgres(df, table_name="applicants", if_exists="replace")
+        ingest_dataframe_to_postgres(df, local=True, table_name="applicants", if_exists="replace")
 
     return df
 
 
 if __name__ == "__main__":
-    applicants_path = './data/applicants/applicants.json'
+    applicants_path = './data/raw/applicants/applicants.json'
     df = process_applicants_data(applicants_path)
 
     print("Colunas geradas:")
