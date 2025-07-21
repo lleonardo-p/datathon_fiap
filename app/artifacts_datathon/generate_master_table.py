@@ -1,7 +1,7 @@
 import pandas as pd
-from prospects import process_prospects_data
-from applicants import process_applicants_data
-from utils import drop_constant_binary_columns, ingest_dataframe_to_postgres
+from artifacts_datathon.prospects import process_prospects_data
+from artifacts_datathon.applicants import process_applicants_data
+from artifacts_datathon.utils import drop_constant_binary_columns, ingest_dataframe_to_postgres
 
 
 def generate_master_table(

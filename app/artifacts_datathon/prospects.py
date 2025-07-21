@@ -1,6 +1,6 @@
 import pandas as pd
 from typing import List, Optional
-from utils import transpose_and_prepare_dataframe, expand_dict_column, detect_nulls_and_nans, remove_invalid_prospect_codigo, ingest_dataframe_to_postgres
+from artifacts_datathon.utils import transpose_and_prepare_dataframe, expand_dict_column, detect_nulls_and_nans, remove_invalid_prospect_codigo, ingest_dataframe_to_postgres
 
 
 def process_prospects_data(prospects_path: str) -> pd.DataFrame:

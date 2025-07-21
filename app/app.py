@@ -9,9 +9,21 @@ from artifacts_datathon.applicants import process_applicants_data
 
 app = Flask(__name__)
 
+# Caminho absoluto ao diretório atual (onde este script está localizado)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Caminho do modelo
+MODEL_PATH = os.path.join(BASE_DIR, "models", "lgbm_oversample_model.pkl")
+
 # Carrega o modelo
-with open("/Users/leonardo/codigos/codigo/app/models/lgbm_oversample_model.pkl", "rb") as f:
-    model = pickle.load(f)
+print(f"[INFO] Carregando modelo de: {MODEL_PATH}")
+try:
+    with open(MODEL_PATH, "rb") as f:
+        model = pickle.load(f)
+    print("[INFO] Modelo carregado com sucesso.")
+except Exception as e:
+    print(f"[ERRO] Falha ao carregar modelo: {e}")
+    raise
 
 @app.route("/health", methods=["GET"])
 def health():
@@ -20,8 +32,9 @@ def health():
 @app.route("/predict", methods=["POST"])
 def predict():
     try:
+        print("[INFO] Requisição recebida no /predict")
         content = request.get_json()
-        print(content)
+        print("[DEBUG] JSON recebido:", content)
 
         if not content or not isinstance(content, dict):
             return jsonify({"error": "Formato de JSON inválido"}), 400
@@ -35,20 +48,20 @@ def predict():
 
         # Processa o arquivo com a função existente
         df = pd.read_json(temp_path)
+        print("[INFO] Pré-processamento inicial:")
         print(df.head())
+
         df_features = process_applicants_data(temp_path, predict=True)
 
-        # Remove o arquivo temporário após o uso
         os.remove(temp_path)
 
         if df_features.empty:
             return jsonify({"error": "Nenhum dado processado"}), 400
 
-        # Faz as predições
+        # Predições
         preds = model.predict(df_features)
         probas = model.predict_proba(df_features)[:, 1]
 
-        # Monta a resposta
         results = []
         for i in range(len(preds)):
             results.append({
@@ -60,6 +73,7 @@ def predict():
         return jsonify({"results": results}), 200
 
     except Exception as e:
+        print("[ERRO] Erro na predição:", e)
         return jsonify({
             "error": str(e),
             "trace": traceback.format_exc()
